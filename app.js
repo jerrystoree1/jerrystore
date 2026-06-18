@@ -6,11 +6,22 @@ if (tg) {
 const initData = tg?.initData || "";
 let state = { me: null, catalog: null, keys: null, tx: null, tab: "catalog" };
 
+const API_BASE = "https://unscrew-evaluate-unarmored.ngrok-free.dev";
+
 async function api(path) {
-  const res = await fetch(path, { headers: { "X-Telegram-Init-Data": initData } });
-  const data = await res.json();
-  if (!res.ok || data.error) throw new Error(data.error || "API hatası");
-  return data;
+    const res = await fetch(API_BASE + path, {
+        headers: {
+            "X-Telegram-Init-Data": initData
+        }
+    });
+
+    const data = await res.json();
+
+    if (!res.ok || data.error) {
+        throw new Error(data.error || "API hatası");
+    }
+
+    return data;
 }
 
 function money(n) { return `$${Number(n || 0).toFixed(2)}`; }
