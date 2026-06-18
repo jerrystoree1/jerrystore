@@ -11,8 +11,9 @@ const API_BASE = "https://unscrew-evaluate-unarmored.ngrok-free.dev";
 async function api(path) {
     const res = await fetch(API_BASE + path, {
         headers: {
-            "X-Telegram-Init-Data": initData
-        }
+    "X-Telegram-Init-Data": initData,
+    "ngrok-skip-browser-warning": "true"
+}
     });
 
     const data = await res.json();
