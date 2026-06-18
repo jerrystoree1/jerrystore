@@ -1,19 +1,210 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
-<meta charset="UTF-8">
-<title>Jerry Mini App</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Jerry Mini App</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root{
+      --bg:#080b12;
+      --card:#111827;
+      --card2:#0f172a;
+      --line:#263244;
+      --text:#f8fafc;
+      --muted:#94a3b8;
+      --accent:#22c55e;
+      --accent2:#38bdf8;
+      --danger:#ef4444;
+      --warn:#f59e0b;
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:radial-gradient(circle at top,#172554 0,#080b12 42%,#05070b 100%);
+      color:var(--text);
+      font-family:Arial,Helvetica,sans-serif;
+      min-height:100vh;
+      padding:16px;
+    }
+    .wrap{max-width:520px;margin:0 auto;padding-bottom:80px}
+    .hero{
+      border:1px solid var(--line);
+      background:linear-gradient(145deg,rgba(17,24,39,.96),rgba(15,23,42,.86));
+      border-radius:24px;
+      padding:18px;
+      box-shadow:0 18px 50px rgba(0,0,0,.35);
+    }
+    .top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{
+      width:48px;height:48px;border-radius:16px;
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      display:grid;place-items:center;font-size:24px;font-weight:900;
+    }
+    h1{font-size:22px;margin:0}
+    .muted{color:var(--muted);font-size:13px;margin-top:4px}
+    .badge{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:7px 10px;color:#bbf7d0;background:rgba(34,197,94,.09)}
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
+    .stat{background:rgba(15,23,42,.8);border:1px solid var(--line);border-radius:16px;padding:12px}
+    .stat b{display:block;font-size:18px;margin-bottom:4px}
+    .stat span{font-size:11px;color:var(--muted)}
+    .tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:14px 0}
+    .tab{
+      border:1px solid var(--line);background:rgba(15,23,42,.78);color:var(--text);
+      padding:11px 6px;border-radius:14px;font-size:12px;cursor:pointer;
+    }
+    .tab.active{background:linear-gradient(135deg,rgba(34,197,94,.28),rgba(56,189,248,.18));border-color:rgba(34,197,94,.65)}
+    .card{background:rgba(17,24,39,.92);border:1px solid var(--line);border-radius:var(--radius);padding:14px;margin-top:12px}
+    .title{font-weight:800;margin-bottom:10px}
+    .grid{display:grid;gap:10px}
+    .product{display:flex;justify-content:space-between;gap:12px;align-items:center;background:rgba(15,23,42,.8);border:1px solid var(--line);border-radius:16px;padding:12px}
+    .product small{display:block;color:var(--muted);margin-top:4px}
+    .price{font-weight:900;color:#bbf7d0;white-space:nowrap}
+    .btn{
+      width:100%;border:0;border-radius:15px;padding:14px 16px;font-weight:800;
+      background:linear-gradient(135deg,var(--accent),#16a34a);color:#04130a;
+      cursor:pointer;margin-top:10px;font-size:15px;
+    }
+    .btn.secondary{background:#1f2937;color:var(--text);border:1px solid var(--line)}
+    .btn.blue{background:linear-gradient(135deg,var(--accent2),#2563eb);color:white}
+    .btn.warn{background:linear-gradient(135deg,var(--warn),#f97316);color:#1c1000}
+    input{
+      width:100%;background:#020617;border:1px solid var(--line);color:var(--text);
+      border-radius:14px;padding:14px;margin-top:8px;outline:none;
+    }
+    .hidden{display:none}
+    .footer{
+      position:fixed;left:0;right:0;bottom:0;padding:12px 16px;
+      background:linear-gradient(180deg,rgba(8,11,18,0),rgba(8,11,18,.98) 25%);
+    }
+    .footer .inner{max-width:520px;margin:0 auto}
+    .pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:7px 10px;color:var(--muted);font-size:12px;margin:4px 4px 0 0}
+  </style>
 </head>
-<body style="background:#111;color:white;text-align:center;font-family:Arial">
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="top">
+        <div class="brand">
+          <div class="logo">J</div>
+          <div>
+            <h1>Jerry Müşteri Paneli</h1>
+            <div class="muted" id="userLine">Telegram Mini App</div>
+          </div>
+        </div>
+        <div class="badge">Aktif</div>
+      </div>
+      <div class="stats">
+        <div class="stat"><b id="balance">0₺</b><span>Bakiye</span></div>
+        <div class="stat"><b>7/24</b><span>Destek</span></div>
+        <div class="stat"><b>Hızlı</b><span>Teslimat</span></div>
+      </div>
+    </section>
 
-<h1>🚀 Jerry Mini App</h1>
-<p>Mini App başarıyla çalışıyor.</p>
+    <div class="tabs">
+      <button class="tab active" onclick="openTab('home', this)">Ana</button>
+      <button class="tab" onclick="openTab('products', this)">Ürün</button>
+      <button class="tab" onclick="openTab('balanceTab', this)">Bakiye</button>
+      <button class="tab" onclick="openTab('orders', this)">Sipariş</button>
+      <button class="tab" onclick="openTab('support', this)">Destek</button>
+    </div>
 
-<script>
-const tg = window.Telegram.WebApp;
-tg.expand();
-</script>
+    <section id="home" class="panel card">
+      <div class="title">✨ Hoş geldin</div>
+      <p class="muted">Bu panel botuna uyumlu görsel Mini App arayüzüdür. Satın alma, bakiye ve destek işlemleri bot üzerinden tamamlanır.</p>
+      <span class="pill">📱 Android</span><span class="pill">🍎 iOS</span><span class="pill">🖥️ Emülatör</span><span class="pill">🎫 Sezonluk</span>
+      <button class="btn blue" onclick="sendToBot('open_products')">Ürünleri Botta Aç</button>
+      <button class="btn secondary" onclick="sendToBot('profile')">Profilimi Botta Aç</button>
+    </section>
 
+    <section id="products" class="panel card hidden">
+      <div class="title">🛒 Popüler Ürünler</div>
+      <div class="grid">
+        <div class="product"><div><b>📱 Android Günlük</b><small>Hızlı teslimat • Stok botta kontrol edilir</small></div><div class="price">Botta</div></div>
+        <div class="product"><div><b>🍎 iOS Haftalık</b><small>GBOX / iOS seçenekleri</small></div><div class="price">Botta</div></div>
+        <div class="product"><div><b>🖥️ Emülatör Aylık</b><small>Emülatör kullanıcıları için</small></div><div class="price">Botta</div></div>
+      </div>
+      <button class="btn" onclick="sendToBot('buy_menu')">Satın Alma Menüsüne Git</button>
+    </section>
+
+    <section id="balanceTab" class="panel card hidden">
+      <div class="title">💰 Bakiye İşlemleri</div>
+      <p class="muted">Bakiye yükleme talebini bot üzerinden yöneticiye iletebilirsin.</p>
+      <input id="amount" inputmode="numeric" placeholder="Yüklenecek tutar örn: 100" />
+      <button class="btn warn" onclick="balanceRequest()">Bakiye Talebi Oluştur</button>
+      <button class="btn secondary" onclick="sendToBot('balance_history')">Bakiye Geçmişi</button>
+    </section>
+
+    <section id="orders" class="panel card hidden">
+      <div class="title">🧾 Siparişler</div>
+      <p class="muted">Satın aldığın ürünlerin key ve sipariş bilgileri bot içinde güvenli şekilde gösterilir.</p>
+      <button class="btn blue" onclick="sendToBot('orders')">Siparişlerimi Botta Aç</button>
+    </section>
+
+    <section id="support" class="panel card hidden">
+      <div class="title">🆘 Destek</div>
+      <p class="muted">Sorun yaşarsan sipariş numaranı sakla ve destek talebi gönder.</p>
+      <button class="btn" onclick="sendToBot('support')">Destek Talebi Gönder</button>
+      <button class="btn secondary" onclick="Telegram.WebApp.close()">Mini App'i Kapat</button>
+    </section>
+  </div>
+
+  <div class="footer"><div class="inner"><button class="btn" onclick="Telegram.WebApp.close()">Bota Dön</button></div></div>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+    tg.ready();
+
+    const user = tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : null;
+    if(user){
+      document.getElementById('userLine').innerText = `${user.first_name || 'Kullanıcı'} • ID: ${user.id}`;
+    }
+
+    function openTab(id, el){
+      document.querySelectorAll('.panel').forEach(p => p.classList.add('hidden'));
+      document.getElementById(id).classList.remove('hidden');
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    function sendToBot(action){
+      const payload = {
+        source: "jerry_miniapp",
+        action: action,
+        user_id: user ? user.id : null,
+        ts: Date.now()
+      };
+      try{
+        tg.sendData(JSON.stringify(payload));
+        tg.HapticFeedback.notificationOccurred('success');
+      }catch(e){
+        tg.showAlert("Bu işlem için bot tarafında WebApp veri alıcısı eklenmeli.");
+      }
+    }
+
+    function balanceRequest(){
+      const amount = document.getElementById('amount').value.trim();
+      if(!amount || isNaN(Number(amount))){
+        tg.showAlert("Lütfen geçerli bir tutar yaz.");
+        return;
+      }
+      const payload = {
+        source: "jerry_miniapp",
+        action: "balance_request",
+        amount: Number(amount),
+        user_id: user ? user.id : null,
+        ts: Date.now()
+      };
+      try{
+        tg.sendData(JSON.stringify(payload));
+        tg.HapticFeedback.notificationOccurred('success');
+      }catch(e){
+        tg.showAlert("Bakiye talebi bot tarafında WebApp veri alıcısı gerektirir.");
+      }
+    }
+  </script>
 </body>
 </html>
